@@ -80,6 +80,9 @@ public class MainActivity extends Activity {
             ListView listView = (ListView) rootView.findViewById(R.id.listview_categories);
             listView.setAdapter(categoriesAdapter);
 
+            NetworkConnection networkConnection = new NetworkConnection();
+            networkConnection.networkRequest("");
+
             return rootView;
         }
     }
