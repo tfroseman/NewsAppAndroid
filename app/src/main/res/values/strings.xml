@@ -9,6 +9,7 @@
     <string name="login_button">Sign In</string>
     <string name="email_example">user@site.net</string>
     <string name="password_example">password</string>
+    <string name="action_refresh">Refresh</string>
 
 
 </resources>
