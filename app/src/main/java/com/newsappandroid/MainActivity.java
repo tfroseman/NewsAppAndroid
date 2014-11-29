@@ -3,7 +3,9 @@ package com.newsappandroid;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +28,15 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new NewsFragment())
                     .commit();
         }
+
+        Intent intent = getIntent();
+        String message1 = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
+
+        String message = intent.toString();
+        Log.e("Intent", message);
     }
 
 
@@ -57,33 +65,4 @@ public class MainActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            String [] categories = {
-                    "Food",
-                    "Art",
-                    "Money",
-                    "Something"
-            };
-
-            List<String> newsCategories = new ArrayList<String>(Arrays.asList(categories));
-            ArrayAdapter<String> categoriesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_categories, R.id.list_item_categories_textview, categories);
-
-            ListView listView = (ListView) rootView.findViewById(R.id.listview_categories);
-            listView.setAdapter(categoriesAdapter);
-
-            NetworkConnection networkConnection = new NetworkConnection();
-            networkConnection.networkRequest("");
-
-            return rootView;
-        }
-    }
 }
