@@ -1,30 +1,27 @@
 package com.newsappandroid;
 
-/**
- * Created by Thomas on 11/24/2014.
- */
 public class User {
-    protected String email;
-    protected String password;
+    private String email;
+    private String password;
 
-    public User(String email, String password) {
+    protected User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public String getEmail() {
+    protected String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    protected void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPassword() {
+    protected String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    protected void setPassword(String password) {
         this.password = password;
     }
 
