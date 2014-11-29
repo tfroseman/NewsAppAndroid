@@ -3,9 +3,6 @@ package com.newsappandroid;
 import android.content.Intent;
 import android.util.Log;
 
-/**
- * Created by Thomas on 11/28/2014.
- */
 public class LogInfo {
     public LogInfo() {
     }
