@@ -22,6 +22,8 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
+    private LogInfo logInfo = new LogInfo();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,9 @@ public class MainActivity extends Activity {
         String message1 = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
 
         String message = intent.toString();
-        Log.e("Intent", message);
+
+        logInfo.logIntent(intent);
+
     }
 
 
@@ -47,20 +51,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * A placeholder fragment containing a simple view.
