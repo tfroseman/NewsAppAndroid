@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 public class LoginActivity extends Activity {
     public final static String EXTRA_MESSAGE = "com.newsapp.LoginActivity.Login";
-    public LogInfo logInfo;
+    public LogInfo logInfo = new LogInfo();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
