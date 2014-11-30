@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.util.Log;
 
 public class LogInfo {
+
     public LogInfo() {
     }
 

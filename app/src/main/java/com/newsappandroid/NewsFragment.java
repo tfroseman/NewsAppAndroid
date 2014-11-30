@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +32,7 @@ public class NewsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        setHasOptionsMenu(true);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -58,17 +60,23 @@ public class NewsFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
-            FetchNewsTask newsTask = new FetchNewsTask();
-            newsTask.execute();
-            Log.i("NewsTask", newsTask.toString());
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                Log.i("Hey","Before NewsTask");
+                FetchNewsTask newsTask = new FetchNewsTask();
+                newsTask.execute();
+                Log.i("Hey","I was pressed");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_news, menu);
     }
 
 
@@ -90,7 +98,7 @@ public class NewsFragment extends Fragment {
                 // Construct the URL for the api request
                 // params could be more than one string.
                 //URL url = new URL("server" + Arrays.toString(params));
-                URL url = new URL("server");
+                URL url = new URL(server);
 
                 logInfo("URL", url.toString());
 
