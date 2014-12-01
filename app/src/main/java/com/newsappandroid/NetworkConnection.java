@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.Arrays;
 
 public class NetworkConnection {
-    private String server = "http://104.131.13.79/";
     private String account = "roseman.tom@gmail.com" + ":" + "1234";
     Categories categories;
     Article article;
@@ -30,12 +29,12 @@ public class NetworkConnection {
     protected void networkRequest(String uri){
         try{
             // Construct the URL for the api request
-            URL url = new URL(server+uri);
+            URL url = new URL(Config.API_SERVER_HOST + uri);
 
             logInfo("URL", url.toString());
 
             //Encode the username and password
-            String encodedCredentials = Base64.encodeToString(account.getBytes(),Base64.NO_WRAP);
+            String encodedCredentials = Base64.encodeToString(account.getBytes(), Base64.NO_WRAP);
 
             logInfo("Account", encodedCredentials);
 
@@ -110,7 +109,7 @@ public class NetworkConnection {
             try{
                 // Construct the URL for the api request
                 // params could be more than one string.
-                URL url = new URL(server+ Arrays.toString(params));
+                URL url = new URL(Config.API_SERVER_HOST + Arrays.toString(params));
 
                 logInfo("URL", url.toString());
 
@@ -183,7 +182,7 @@ public class NetworkConnection {
     @Override
     public String toString() {
         return "NetworkConnection{" +
-                "server='" + server + '\'' +
+                "server='" + Config.API_SERVER_HOST + '\'' +
                 ", account='" + account + '\'' +
                 ", categories=" + categories +
                 ", article=" + article +

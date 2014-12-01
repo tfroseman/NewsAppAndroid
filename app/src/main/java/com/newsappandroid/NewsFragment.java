@@ -89,7 +89,6 @@ public class NewsFragment extends Fragment {
 
         // Will contain the raw JSON response as a string.
         String newsJsonStr = null;
-        private String server = "http://104.131.13.79/";
         private String account = "roseman.tom@gmail.com" + ":" + "1234";
 
         @Override
@@ -98,7 +97,7 @@ public class NewsFragment extends Fragment {
                 // Construct the URL for the api request
                 // params could be more than one string.
                 //URL url = new URL("server" + Arrays.toString(params));
-                URL url = new URL(server);
+                URL url = new URL(Config.API_SERVER_HOST);
 
                 logInfo("URL", url.toString());
 
