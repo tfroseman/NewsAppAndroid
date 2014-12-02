@@ -38,11 +38,12 @@ public class NewsFragment extends Fragment {
          */
         categoriesAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_categories, R.id.list_item_categories_textview, categories);
 
-        listView = (ListView) rootView.findViewById(R.id.listview_categories);
-        listView.setAdapter(categoriesAdapter);
-
         FetchNewsTask newsTask = new FetchNewsTask("a@alk.im", "test", categoriesAdapter);
         newsTask.execute();
+
+        //Update the categoriesAdapter with the categories or do it inside of the FetchNewsTask
+        listView = (ListView) rootView.findViewById(R.id.listview_categories);
+        listView.setAdapter(categoriesAdapter);
 
         //List<String> newsCategories = new ArrayList<String>(Arrays.asList(categories));
 
