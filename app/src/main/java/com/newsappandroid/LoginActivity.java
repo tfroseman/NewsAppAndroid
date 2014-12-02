@@ -3,7 +3,6 @@ package com.newsappandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,7 +10,9 @@ import android.widget.EditText;
 
 
 public class LoginActivity extends Activity {
-    public final static String EXTRA_MESSAGE = "com.newsapp.LoginActivity.Login";
+    public final static String USER_EMAIL = "USER_EMAIL";
+    public final static String USER_PASSWORD = "USER_PASSWORD";
+
     public LogInfo logInfo = new LogInfo();
 
     @Override
@@ -44,22 +45,23 @@ public class LoginActivity extends Activity {
     }
 
     public void login(View view) {
-        // Send to news Activity
+        //Grab text from editText fields
         EditText user_email_Text = (EditText)findViewById(R.id.user_email);
-        String email = user_email_Text.getText().toString();
-
         EditText user_password_Text = (EditText)findViewById(R.id.user_password);
+
+        String email = user_email_Text.getText().toString();
         String password = user_password_Text.getText().toString();
 
-        User user = new User(email,password);
+        // Create intent to launch new activity
         Intent intent = new Intent(this, MainActivity.class);
 
-        intent.putExtra(EXTRA_MESSAGE, user.toString());
+        // Wrap up user info to send to next activity
+        Bundle userInfo = new Bundle();
+        userInfo.putString(USER_EMAIL, email);
+        userInfo.putString(USER_PASSWORD, password);
 
-        logInfo.logUser(user);
-        logInfo.logIntent(intent);
+        intent.putExtras(userInfo);
 
         startActivity(intent);
-
     }
 }

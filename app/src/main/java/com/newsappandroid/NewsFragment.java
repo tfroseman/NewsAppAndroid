@@ -1,7 +1,6 @@
 package com.newsappandroid;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
@@ -14,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.content.Context;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,17 +29,27 @@ import java.util.List;
 
 
 public class NewsFragment extends Fragment {
+    protected String newsJsonStr = null;
+    protected ArrayAdapter<String> categoriesAdapter;
+    protected ListView listView;
+    protected JSONObject obj = null;
 
     public NewsFragment() {
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        FetchNewsTask newsTask = new FetchNewsTask();
+        newsTask.execute();
+
+
+
+
+
         // Tells the android system the activity has
         // a menu as described in onCreateOptionsMenu()
         setHasOptionsMenu(true);
-        NewsFragment context = this;
-
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -50,11 +61,13 @@ public class NewsFragment extends Fragment {
                 "Something"
         };
 
-        List<String> newsCategories = new ArrayList<String>(Arrays.asList(categories));
-        ArrayAdapter<String> categoriesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_categories, R.id.list_item_categories_textview, categories);
+        //List<String> newsCategories = new ArrayList<String>(Arrays.asList(categories));
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_categories);
+        categoriesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_categories, R.id.list_item_categories_textview, categories);
+
+        listView = (ListView) rootView.findViewById(R.id.listview_categories);
         listView.setAdapter(categoriesAdapter);
+
 
         //NetworkConnection networkConnection = new NetworkConnection();
         //networkConnection.networkRequest("");
@@ -72,6 +85,7 @@ public class NewsFragment extends Fragment {
             case R.id.action_refresh:
                 FetchNewsTask newsTask = new FetchNewsTask();
                 newsTask.execute();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -91,11 +105,10 @@ public class NewsFragment extends Fragment {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        // Will contain the raw JSON response as a string.
-        String newsJsonStr = null;
-
-        private String server = "http://104.131.13.79/";
-        private String account = "roseman.tom@gmail.com" + ":" + "1234";
+////////////////////////////////////////////////////////////////
+        private String server = "http://104.131.109.166/account";
+        private String account = "a@alk.im" + ":" + "test";
+////////////////////////////////////////////////////////////////
 
         @Override
         protected String doInBackground(String... params) {
@@ -106,7 +119,7 @@ public class NewsFragment extends Fragment {
                 URL url = new URL(server);
 
                 logInfo("URL", url.toString());
-
+                logInfo("PlainAccount", account);
                 //Encode the username and password
                 String encodedCredentials = Base64.encodeToString(account.getBytes(), Base64.NO_WRAP);
 
@@ -115,14 +128,16 @@ public class NewsFragment extends Fragment {
                 // Create the request to the server, and open the connection
 
                 urlConnection = (HttpURLConnection) url.openConnection();
-                //urlConnection.setRequestProperty("Authorization", "Basic" + encodedCredentials);
+                urlConnection.setRequestProperty("Authorization", "Basic " + encodedCredentials);
                 urlConnection.setRequestMethod("GET");
 
                 logInfo("URLConnection", urlConnection.toString());
                 try {
                     urlConnection.connect();
+                    Log.i(LOG_TAG, String.valueOf(urlConnection.getResponseCode()));
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "Info", e);
+                    Log.e(LOG_TAG, String.valueOf(urlConnection.getResponseCode()));
                 }
 
 
@@ -178,12 +193,38 @@ public class NewsFragment extends Fragment {
                 e.printStackTrace();
             }*/
 
+
             return newsJsonStr;
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            try {
+                obj = new JSONObject(newsJsonStr);
+                Log.i("My App", obj.toString());
+            } catch (Throwable t) {
+                Log.e("My App", "Could not parse malformed JSON: \"" + newsJsonStr + "\"");
+            }
+
+            if (obj != null) {
+                try {
+                    Log.i("USER",obj.getString("user"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                Log.i("NULL", "Obj is null need more time");
+            }
+
+
+            categoriesAdapter.notifyDataSetChanged();
         }
 
         private void logInfo(String url, String s) {
             Log.e(url, s);
         }
     }
+
+
 }
 

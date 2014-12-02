@@ -15,7 +15,6 @@
         <activity
             android:name="com.newsappandroid.MainActivity"
             android:label="@string/app_name" >
-
         </activity>
         <activity
             android:name="com.newsappandroid.LoginActivity"

@@ -36,12 +36,11 @@ public class MainActivity extends Activity {
         }
 
         Intent intent = getIntent();
-        String message1 = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
+        Bundle extras = intent.getExtras();
 
-        String message = intent.toString();
-
-        logInfo.logIntent(intent);
-
+        //Parse to bundle from the intent
+        User user = new User(extras.getString("USER_EMAIL"), extras.getString("USER_PASSWORD"));
+        logInfo.logUser(user);
     }
 
 
