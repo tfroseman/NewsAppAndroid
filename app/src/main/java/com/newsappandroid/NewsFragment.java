@@ -44,9 +44,6 @@ public class NewsFragment extends Fragment {
         newsTask.execute();
 
 
-
-
-
         // Tells the android system the activity has
         // a menu as described in onCreateOptionsMenu()
         setHasOptionsMenu(true);
@@ -99,6 +96,10 @@ public class NewsFragment extends Fragment {
     }
 
     public class FetchNewsTask extends AsyncTask<String, Integer, String> {
+        public FetchNewsTask(){
+            email = "a@alk.im";
+            password = "test";
+        }
         private final String LOG_TAG = NewsFragment.class.getSimpleName();
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -107,7 +108,8 @@ public class NewsFragment extends Fragment {
 
 ////////////////////////////////////////////////////////////////
         private String server = "http://104.131.109.166/account";
-        private String account = "a@alk.im" + ":" + "test";
+        //private String account = "a@alk.im" + ":" + "test";
+        private String email, password;
 ////////////////////////////////////////////////////////////////
 
         @Override
@@ -119,9 +121,9 @@ public class NewsFragment extends Fragment {
                 URL url = new URL(server);
 
                 logInfo("URL", url.toString());
-                logInfo("PlainAccount", account);
+                logInfo("PlainAccount", email + ":" + password);
                 //Encode the username and password
-                String encodedCredentials = Base64.encodeToString(account.getBytes(), Base64.NO_WRAP);
+                String encodedCredentials = Base64.encodeToString((email + ":" + password).getBytes(), Base64.NO_WRAP);
 
                 logInfo("Account", encodedCredentials);
 
@@ -197,10 +199,13 @@ public class NewsFragment extends Fragment {
             return newsJsonStr;
         }
 
+
+        //Called after the task has completed
         @Override
         protected void onPostExecute(String result){
+            //result == newsJsonStr
             try {
-                obj = new JSONObject(newsJsonStr);
+                obj = new JSONObject(result);
                 Log.i("My App", obj.toString());
             } catch (Throwable t) {
                 Log.e("My App", "Could not parse malformed JSON: \"" + newsJsonStr + "\"");
@@ -215,7 +220,6 @@ public class NewsFragment extends Fragment {
             }else{
                 Log.i("NULL", "Obj is null need more time");
             }
-
 
             categoriesAdapter.notifyDataSetChanged();
         }
