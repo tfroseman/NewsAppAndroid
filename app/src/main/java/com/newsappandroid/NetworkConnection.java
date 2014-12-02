@@ -26,6 +26,14 @@ public class NetworkConnection {
         return request(urlConnection);
     }
 
+    public static String tokenAuth(String url, String token) throws IOException {
+        HttpURLConnection urlConnection = urlConnection(url);
+        urlConnection.setRequestProperty("X-Auth-Token", token);
+        urlConnection.setRequestMethod("GET");
+
+        return request(urlConnection);
+    }
+
     private static HttpURLConnection urlConnection(String url) throws IOException {
         return (HttpURLConnection) new URL(url).openConnection();
     }
