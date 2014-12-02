@@ -11,8 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class NetworkConnection {
-    Categories categories;
-    Article article;
 
     public static String basicAuth(String urlString, String username, String password) throws IOException {
         HttpURLConnection urlConnection = null;
@@ -69,20 +67,7 @@ public class NetworkConnection {
         return newsJsonStr;
     }
 
-    public Categories getCategories() {
-        return null;
-    }
-
     public void logInfo(String tag, String log) {
         Log.i(tag, log);
-    }
-
-    @Override
-    public String toString() {
-        return "NetworkConnection{" +
-                "server='" + Config.API_SERVER_HOST + '\'' +
-                ", categories=" + categories +
-                ", article=" + article +
-                '}';
     }
 }
