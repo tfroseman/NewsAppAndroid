@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.content.Context;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class NewsFragment extends Fragment {
 
     public NewsFragment() {
@@ -32,10 +34,15 @@ public class NewsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Tells the android system the activity has
+        // a menu as described in onCreateOptionsMenu()
         setHasOptionsMenu(true);
+        NewsFragment context = this;
+
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        //Testing listItem
         String[] categories = {
                 "Food",
                 "Art",
@@ -63,10 +70,8 @@ public class NewsFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                Log.i("Hey", "Before NewsTask");
-                FetchNewsTask newsTask = new FetchNewsTask("a@alk.im", "test");
+                FetchNewsTask newsTask = new FetchNewsTask();
                 newsTask.execute();
-                Log.i("Hey", "I was pressed");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -80,24 +85,100 @@ public class NewsFragment extends Fragment {
     }
 
     public class FetchNewsTask extends AsyncTask<String, Integer, String> {
-        private String email, password;
+        private final String LOG_TAG = NewsFragment.class.getSimpleName();
+        // These two need to be declared outside the try/catch
+        // so that they can be closed in the finally block.
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
 
-        protected FetchNewsTask(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
+        // Will contain the raw JSON response as a string.
+        String newsJsonStr = null;
+
+        private String server = "http://104.131.13.79/";
+        private String account = "roseman.tom@gmail.com" + ":" + "1234";
 
         @Override
         protected String doInBackground(String... params) {
             try {
-                //TODO: Change this to token authentication when implemented
-                return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", email, password);
+                // Construct the URL for the api request
+                // params could be more than one string.
+                //URL url = new URL("server" + Arrays.toString(params));
+                URL url = new URL(server);
+
+                logInfo("URL", url.toString());
+
+                //Encode the username and password
+                String encodedCredentials = Base64.encodeToString(account.getBytes(), Base64.NO_WRAP);
+
+                logInfo("Account", encodedCredentials);
+
+                // Create the request to the server, and open the connection
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                //urlConnection.setRequestProperty("Authorization", "Basic" + encodedCredentials);
+                urlConnection.setRequestMethod("GET");
+
+                logInfo("URLConnection", urlConnection.toString());
+                try {
+                    urlConnection.connect();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Info", e);
+                }
+
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    newsJsonStr = null;
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    newsJsonStr = null;
+                    return null;
+                }
+                newsJsonStr = buffer.toString();
+                Log.i(LOG_TAG, newsJsonStr);
             } catch (IOException e) {
-                //TODO: Log the exception
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the json, there's no point in attemping
+                // to parse it.
+                newsJsonStr = null;
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
             }
 
-            //TODO: Handle this case somehow.
-            return null;
+            /*try {
+                newsJsonObject = new JSONObject(newsJsonStr);
+                //return newsJsonObject;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }*/
+
+            return newsJsonStr;
         }
 
         private void logInfo(String url, String s) {
