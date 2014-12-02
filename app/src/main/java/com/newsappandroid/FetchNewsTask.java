@@ -46,7 +46,6 @@ public class FetchNewsTask extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {
         try {
             jsonObject = new JSONObject(result);
-            Log.i("My App", jsonObject.toString());
         } catch (Throwable t) {
             //Log.e("My App", "Could not parse malformed JSON: \"" + newsJsonStr + "\"");
         }
