@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '20.0.0'
 
     defaultConfig {
         applicationId "com.newsappandroid"
@@ -25,6 +25,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile files('src/main/java/com/newsappandroid/androidasync-2.0.1.jar')
-    compile files('src/main/java/com/newsappandroid/ion-2.0.1.jar')
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.koushikdutta.ion:ion:2.0.1'
+    compile 'com.koushikdutta.async:androidasync:2.0.1'
 }
