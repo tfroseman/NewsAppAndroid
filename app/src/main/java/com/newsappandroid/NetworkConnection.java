@@ -12,62 +12,85 @@ import java.net.URL;
 
 public class NetworkConnection {
 
-    public static String basicAuth(String urlString, String username, String password) throws IOException {
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        String newsJsonStr = null;
+    private static final String LOG_TAG = NetworkConnection.class.getSimpleName();
 
+    private NetworkConnection(){}
 
-        // Construct the URL for the api request
-        // params could be more than one string.
-        URL url = new URL(urlString);
-
-        //Encode the username and password
+    public static String basicAuth(String url, String username, String password) throws IOException {
         String encodedCredentials = Base64.encodeToString((username + ":" + password).getBytes(), Base64.NO_WRAP);
 
-        // Create the request to the server, and open the connection
-        urlConnection = (HttpURLConnection) url.openConnection();
-        //urlConnection.setRequestProperty("Authorization", "Basic" + encodedCredentials);
+        HttpURLConnection urlConnection = urlConnection(url);
+        urlConnection.setRequestProperty("Authorization", "Basic " + encodedCredentials);
         urlConnection.setRequestMethod("GET");
 
-        urlConnection.connect();
-
-        // Read the input stream into a String
-        InputStream inputStream = urlConnection.getInputStream();
-        StringBuffer buffer = new StringBuffer();
-
-        if (inputStream == null) {
-            urlConnection.disconnect();
-            return null;
-        }
-
-        reader = new BufferedReader(new InputStreamReader(inputStream));
-
-        if(reader == null) {
-            return null;
-        }
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-            // But it does make debugging a *lot* easier if you print out the completed
-            // buffer for debugging.
-            buffer.append(line + "\n");
-        }
-
-        reader.close();
-        urlConnection.disconnect();
-
-        if (buffer.length() == 0) {
-            return null;
-        }
-
-        newsJsonStr = buffer.toString();
-
-        return newsJsonStr;
+        return request(urlConnection);
     }
 
-    public void logInfo(String tag, String log) {
+    private static HttpURLConnection urlConnection(String url) throws IOException {
+        return (HttpURLConnection) new URL(url).openConnection();
+    }
+
+    private static String request(HttpURLConnection urlConnection) {
+        String jsonStr;
+        BufferedReader reader = null;
+
+        try {
+
+            logInfo("URLConnection", urlConnection.toString());
+            try {
+                urlConnection.connect();
+                Log.i(LOG_TAG, String.valueOf(urlConnection.getResponseCode()));
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Info", e);
+                Log.e(LOG_TAG, String.valueOf(urlConnection.getResponseCode()));
+            }
+
+
+            // Read the input stream into a String
+            InputStream inputStream = urlConnection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+            if (inputStream == null) {
+                // Nothing to do.
+                jsonStr = null;
+                return null;
+            }
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                // But it does make debugging a *lot* easier if you print out the completed
+                // buffer for debugging.
+                buffer.append(line + "\n");
+            }
+
+            if (buffer.length() == 0) {
+                // Stream was empty.  No point in parsing.
+                jsonStr = null;
+                return null;
+            }
+            jsonStr = buffer.toString();
+            Log.i(LOG_TAG, jsonStr);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error ", e);
+            return null;
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
+        }
+
+        return jsonStr;
+    }
+
+    public static void logInfo(String tag, String log) {
         Log.i(tag, log);
     }
 }
