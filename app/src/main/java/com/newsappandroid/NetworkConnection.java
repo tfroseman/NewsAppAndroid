@@ -16,28 +16,25 @@ public class NetworkConnection {
 
     private NetworkConnection(){}
 
-    public static String basicAuth(String urlString, String username, String password) throws IOException {
-        String newsJsonStr;
-        HttpURLConnection urlConnection = null;
+    public static String basicAuth(String url, String username, String password) throws IOException {
+        String encodedCredentials = Base64.encodeToString((username + ":" + password).getBytes(), Base64.NO_WRAP);
+
+        HttpURLConnection urlConnection = urlConnection(url);
+        urlConnection.setRequestProperty("Authorization", "Basic " + encodedCredentials);
+        urlConnection.setRequestMethod("GET");
+
+        return request(urlConnection);
+    }
+
+    private static HttpURLConnection urlConnection(String url) throws IOException {
+        return (HttpURLConnection) new URL(url).openConnection();
+    }
+
+    private static String request(HttpURLConnection urlConnection) {
+        String jsonStr;
         BufferedReader reader = null;
 
         try {
-            // Construct the URL for the api request
-            // params could be more than one string.
-            URL url = new URL(urlString);
-
-            logInfo("URL", url.toString());
-            logInfo("PlainAccount", username + ":" + password);
-            //Encode the username and password
-            String encodedCredentials = Base64.encodeToString((username + ":" + password).getBytes(), Base64.NO_WRAP);
-
-            logInfo("Account", encodedCredentials);
-
-            // Create the request to the server, and open the connection
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("Authorization", "Basic " + encodedCredentials);
-            urlConnection.setRequestMethod("GET");
 
             logInfo("URLConnection", urlConnection.toString());
             try {
@@ -54,7 +51,7 @@ public class NetworkConnection {
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
                 // Nothing to do.
-                newsJsonStr = null;
+                jsonStr = null;
                 return null;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -69,16 +66,13 @@ public class NetworkConnection {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
-                newsJsonStr = null;
+                jsonStr = null;
                 return null;
             }
-            newsJsonStr = buffer.toString();
-            Log.i(LOG_TAG, newsJsonStr);
+            jsonStr = buffer.toString();
+            Log.i(LOG_TAG, jsonStr);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the json, there's no point in attemping
-            // to parse it.
-            newsJsonStr = null;
             return null;
         } finally {
             if (urlConnection != null) {
@@ -93,7 +87,7 @@ public class NetworkConnection {
             }
         }
 
-        return newsJsonStr;
+        return jsonStr;
     }
 
     public static void logInfo(String tag, String log) {
