@@ -23,6 +23,8 @@ public class NewsFragment extends Fragment {
         // a menu as described in onCreateOptionsMenu()
         setHasOptionsMenu(true);
 
+        System.out.println(NewsAccountManager.getToken(getActivity()));
+
         String[] categories = {
             "Food",
             "Art",

@@ -3,15 +3,20 @@ package com.newsappandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import java.io.Serializable;
+
 
 public class LoginActivity extends Activity {
     public final static String USER_EMAIL = "USER_EMAIL";
     public final static String USER_PASSWORD = "USER_PASSWORD";
+    public static final String ACTIVITY = "ACTIVITY";
 
     public LogInfo logInfo = new LogInfo();
 
@@ -46,11 +51,13 @@ public class LoginActivity extends Activity {
 
     public void login(View view) {
         //Grab text from editText fields
-        EditText user_email_Text = (EditText)findViewById(R.id.user_email);
-        EditText user_password_Text = (EditText)findViewById(R.id.user_password);
+        EditText emailText = (EditText)findViewById(R.id.user_email);
+        EditText passwordText = (EditText)findViewById(R.id.user_password);
 
-        String email = user_email_Text.getText().toString();
-        String password = user_password_Text.getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+
+        NewsAccountManager.create(this, email, "1833631fa88387cd05d893151a0f5cd08fc1546c0d10a714110b8da2d8f30b7c");
 
         // Create intent to launch new activity
         Intent intent = new Intent(this, MainActivity.class);
