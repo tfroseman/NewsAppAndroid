@@ -13,6 +13,7 @@ import java.net.URL;
 public class NetworkConnection {
 
     private static final String LOG_TAG = NetworkConnection.class.getSimpleName();
+    private static final String ERROR_LOGIN = "LOGIN_FAILURE";
 
     private NetworkConnection(){}
 
@@ -35,14 +36,12 @@ public class NetworkConnection {
         BufferedReader reader = null;
 
         try {
-
-            logInfo("URLConnection", urlConnection.toString());
             try {
                 urlConnection.connect();
                 Log.i(LOG_TAG, String.valueOf(urlConnection.getResponseCode()));
+
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Info", e);
-                Log.e(LOG_TAG, String.valueOf(urlConnection.getResponseCode()));
             }
 
 
@@ -90,7 +89,4 @@ public class NetworkConnection {
         return jsonStr;
     }
 
-    public static void logInfo(String tag, String log) {
-        Log.i(tag, log);
-    }
 }
