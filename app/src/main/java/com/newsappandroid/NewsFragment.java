@@ -38,7 +38,7 @@ public class NewsFragment extends Fragment {
          */
         categoriesAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_categories, R.id.list_item_categories_textview, categories);
 
-        FetchNewsTask newsTask = new FetchNewsTask("a@alk.im", "test", categoriesAdapter);
+        FetchNewsTask newsTask = new FetchNewsTask(categoriesAdapter);
         newsTask.execute();
 
         //Update the categoriesAdapter with the categories or do it inside of the FetchNewsTask
@@ -58,7 +58,7 @@ public class NewsFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                FetchNewsTask newsTask = new FetchNewsTask("a@alk.im", "test", categoriesAdapter);
+                FetchNewsTask newsTask = new FetchNewsTask(categoriesAdapter);
                 newsTask.execute();
 
                 return true;
