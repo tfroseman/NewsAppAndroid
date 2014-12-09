@@ -17,27 +17,26 @@ public class FetchNewsTask extends AsyncTask<String, Integer, String> {
 
     private ArrayAdapter<String> adapter = null;
     private final String LOG_TAG = NewsFragment.class.getSimpleName();
+    private User user = User.getUser();
 
-    private String email, password;
-
-    public FetchNewsTask(String email, String password, ArrayAdapter<String> adapter){
-        this.email = email;
-        this.password = password;
+    public FetchNewsTask(ArrayAdapter<String> adapter){
         this.adapter = adapter;
     }
 
     @Override
     protected String doInBackground(String... params) {
         try {
-            //TODO: Change this to tokenAuth once implemented
-            return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", email, password);
+            if(user.hasToken()) {
+                return NetworkConnection.tokenAuth(Config.API_SERVER_HOST + "categories", user.getApi_token());
+            }else {
+                return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "categories", user.getEmail(), user.getPassword());
+            }
         } catch (IOException e) {
             logInfo(LOG_TAG, "Error fetching: " + e);
         }
 
         return null;
     }
-
 
     /**
      * Called after the task has completed
@@ -51,11 +50,7 @@ public class FetchNewsTask extends AsyncTask<String, Integer, String> {
         }
 
         if (jsonObject != null) {
-            try {
-                Log.i("USER", jsonObject.getString("user"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Log.i("USER", jsonObject.toString());
         } else {
             Log.i("NULL", "Obj is null need more time");
         }

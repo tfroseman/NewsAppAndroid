@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,10 +71,6 @@ public class LoginActivity extends Activity {
 
         signedIn = requestAccount(signedIn, user.getEmail(), user.getPassword());
 
-        // Not cool but only way i could think of
-        if(user.getSigned_in()==1) {
-            nextActivity(view);
-        }
     }
 
     private int requestAccount(int signedIn, String email, String password) {
@@ -82,14 +79,10 @@ public class LoginActivity extends Activity {
 
         loginTask.execute(email, password);
 
-        while(user.getSigned_in() == -9 ){
-            // Super not a good idea. Locks main ui thread
-        }
-
         return user.getSigned_in();
     }
 
-    private void nextActivity(View view) {
+    private void nextActivity() {
         // Create intent to launch new activity
         Intent intent = new Intent(this, MainActivity.class);
 
@@ -110,6 +103,7 @@ public class LoginActivity extends Activity {
          */
         protected JSONObject jsonObject = null;
         User user = User.getUser();
+        String result;
 
         public LoginRequestTask() {
         }
@@ -120,20 +114,19 @@ public class LoginActivity extends Activity {
          */
         @Override
         protected String doInBackground(String... params) {
-            if (checkNetwork()) {
                 try {
                     if (user.hasToken()) {
-                        return NetworkConnection.tokenAuth(Config.API_SERVER_HOST, user.getApi_token());
+                        return NetworkConnection.tokenAuth(Config.API_SERVER_HOST + "account", user.getApi_token());
                     } else {
-                        return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                        //return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                        result = NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                        Log.i("Result", result);
+                        return result;
                     }
 
                 } catch (IOException e) {
                     // Log exception
                 }
-            } else {
-                return "Network Error";
-            }
             // Should not hit this
             return "ERROR";
         }
@@ -145,11 +138,11 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             completed = true;
-            if (result.matches("Network Error")){
-                Toast signedIn = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
-                signedIn.show();
-                user.setSigned_in(-9);
-            }else {
+            //if (result.matches("Network Error")){
+                //Toast signedIn = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
+                //signedIn.show();
+                //user.setSigned_in(-9);
+            //}else {
 
                 JSONObject userObject;
                 try {
@@ -169,7 +162,8 @@ public class LoginActivity extends Activity {
                     e.printStackTrace();
 
                 }
-            }
+           // }
+            nextActivity();
         }
 
         /**
