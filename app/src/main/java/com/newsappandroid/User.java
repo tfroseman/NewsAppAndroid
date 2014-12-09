@@ -9,7 +9,7 @@ public class User {
     private String first_name, last_name, api_token;
     private String activated_at;
     private Boolean activated;
-    private Boolean signed_in;
+    private int signed_in = -9;
     private String last_login;
     private String created_at;
     private String updated_at;
@@ -131,11 +131,11 @@ public class User {
                 '}';
     }
 
-    public Boolean getSigned_in() {
+    public int getSigned_in() {
         return signed_in;
     }
 
-    public void setSigned_in(Boolean signed_in) {
+    public void setSigned_in(int signed_in) {
         this.signed_in = signed_in;
     }
 }

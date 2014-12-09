@@ -1,7 +1,10 @@
 package com.newsappandroid;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,7 +25,7 @@ public class LoginActivity extends Activity {
     private String user_email;
     private String user_password;
 
-    boolean signedIn = false;
+    int signedIn = -1;
     boolean completed = false;
 
     User user = User.getUser();
@@ -58,7 +61,6 @@ public class LoginActivity extends Activity {
 
     public void login(View view) {
         //Grab text from editText fields
-        completed = false;
         user_email = ((EditText) findViewById(R.id.user_email)).getText().toString();
         user_password = ((EditText) findViewById(R.id.user_password)).getText().toString();
 
@@ -67,18 +69,22 @@ public class LoginActivity extends Activity {
         user.setPassword(user_password);
 
         signedIn = requestAccount(signedIn, user.getEmail(), user.getPassword());
-        while(user.getSigned_in())
-        if (signedIn) {
+
+        // Not cool but only way i could think of
+        if(user.getSigned_in()==1) {
             nextActivity(view);
         }
-
     }
 
-    private boolean requestAccount(boolean signedIn, String email, String password) {
+    private int requestAccount(int signedIn, String email, String password) {
         String response = "";
         LoginRequestTask loginTask = new LoginRequestTask();
 
         loginTask.execute(email, password);
+
+        while(user.getSigned_in() == -9 ){
+            // Super not a good idea. Locks main ui thread
+        }
 
         return user.getSigned_in();
     }
@@ -108,24 +114,28 @@ public class LoginActivity extends Activity {
         public LoginRequestTask() {
         }
 
-
         /**
          * Called by object.execute
          *
          */
         @Override
         protected String doInBackground(String... params) {
-            try {
-                //if(user.hasToken()){
+            if (checkNetwork()) {
+                try {
+                    if (user.hasToken()) {
+                        return NetworkConnection.tokenAuth(Config.API_SERVER_HOST, user.getApi_token());
+                    } else {
+                        return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                    }
 
-                //}else{
-                    return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
-                //}
-
-            } catch (IOException e) {
-                // Log exception
+                } catch (IOException e) {
+                    // Log exception
+                }
+            } else {
+                return "Network Error";
             }
-            return null;
+            // Should not hit this
+            return "ERROR";
         }
 
         /**
@@ -134,25 +144,31 @@ public class LoginActivity extends Activity {
          */
         @Override
         protected void onPostExecute(String result) {
-            JSONObject userObject;
-            try {
-                jsonObject = new JSONObject(result);
-            } catch (Throwable t) {
-                // Log here about malformed json
-            }
-
-            try {
-                userObject = jsonObject.getJSONObject("user");
-                populateUser(userObject);
-
-                //Alert the user that they are signed in with a toast
-                Toast signedIn = Toast.makeText(getApplicationContext(), "Signed In", Toast.LENGTH_LONG);
+            completed = true;
+            if (result.matches("Network Error")){
+                Toast signedIn = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
                 signedIn.show();
+                user.setSigned_in(-9);
+            }else {
 
+                JSONObject userObject;
+                try {
+                    jsonObject = new JSONObject(result);
+                } catch (Throwable t) {
+                    // Log here about malformed json
+                }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                try {
+                    userObject = jsonObject.getJSONObject("user");
+                    populateUser(userObject);
 
+                    //Alert the user that they are signed in with a toast
+                    Toast signedIn = Toast.makeText(getApplicationContext(), "Signed In", Toast.LENGTH_LONG);
+                    signedIn.show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
             }
         }
 
@@ -177,10 +193,18 @@ public class LoginActivity extends Activity {
                 user.setCreated_at(userObject.getString("created_at"));
                 user.setUpdated_at(userObject.getString("updated_at"));
                 user.setApi_token(userObject.getString("api_token"));
-                user.setSigned_in(true);
+                user.setSigned_in(1);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        private boolean checkNetwork(){
+            ConnectivityManager cm =
+                    (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         }
 
     }
