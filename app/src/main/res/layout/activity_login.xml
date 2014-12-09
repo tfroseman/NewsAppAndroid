@@ -24,7 +24,8 @@
         android:layout_alignStart="@+id/user_password"
         android:layout_marginTop="132dp"
         android:hint="@string/email_example"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:gravity="center_vertical|center_horizontal" />
 
     <EditText
         android:layout_width="match_parent"
@@ -35,7 +36,8 @@
         android:layout_below="@+id/user_email"
         android:layout_centerHorizontal="true"
         android:hint="@string/password_example"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:gravity="center_vertical|center_horizontal" />
 
     <Button
         android:layout_width="match_parent"
