@@ -6,7 +6,7 @@ public class User {
 
     private int id;
     private String email, password;
-    private String first_name, last_name, api_token;
+    private String first_name, last_name, api_token = "";
     private String activated_at;
     private Boolean activated;
     private int signed_in = -9;
