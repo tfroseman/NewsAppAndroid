@@ -1,6 +1,10 @@
-package com.newsappandroid;
+package com.newsappandroid.model;
 
-import java.util.Date;
+/**
+ * User.java
+ * Holds all of the info about the user in the app
+ * Is a singleton class
+ */
 
 public class User {
 

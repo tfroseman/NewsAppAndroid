@@ -1,5 +1,10 @@
 package com.newsappandroid;
 
+/**
+ * Config.java
+ * Store basic info about the system for android to use
+ */
+
 public class Config {
     /**
      * Host address of the API server

@@ -1,4 +1,4 @@
-package com.newsappandroid;
+package com.newsappandroid.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,16 +7,29 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.newsappandroid.Config;
+import com.newsappandroid.model.User;
+import com.newsappandroid.NetworkConnection;
+import com.newsappandroid.NewsAccountManager;
+import com.newsappandroid.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+
+/**
+ * LoginActivity.java
+ * Activity that opens on launch of the app
+ * Shows a login screen and then moves to <CategoryActivity>
+ */
 
 
 public class LoginActivity extends Activity {
@@ -34,7 +47,14 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
+
+        NewsAccountManager.getToken(this);
 
     }
 
@@ -73,6 +93,12 @@ public class LoginActivity extends Activity {
 
     }
 
+    public void register(View view){
+        // Create intent to launch new register activity
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
     private int requestAccount(int signedIn, String email, String password) {
         String response = "";
         LoginRequestTask loginTask = new LoginRequestTask();
@@ -84,7 +110,7 @@ public class LoginActivity extends Activity {
 
     private void nextActivity() {
         // Create intent to launch new activity
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, CategoryActivity.class);
 
         // Wrap up user info to send to next activity
         Bundle userInfo = new Bundle();
@@ -103,7 +129,6 @@ public class LoginActivity extends Activity {
          */
         protected JSONObject jsonObject = null;
         User user = User.getUser();
-        String result;
 
         public LoginRequestTask() {
         }
@@ -118,10 +143,10 @@ public class LoginActivity extends Activity {
                     if (user.hasToken()) {
                         return NetworkConnection.tokenAuth(Config.API_SERVER_HOST + "account", user.getApi_token());
                     } else {
-                        //return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
-                        result = NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
-                        Log.i("Result", result);
-                        return result;
+                        return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                        //result = NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                        //Log.i("Result", result);
+                        //return result;
                     }
 
                 } catch (IOException e) {
@@ -145,6 +170,7 @@ public class LoginActivity extends Activity {
             //}else {
 
                 JSONObject userObject;
+                JSONObject tokenObject;
                 try {
                     jsonObject = new JSONObject(result);
                 } catch (Throwable t) {
@@ -153,7 +179,10 @@ public class LoginActivity extends Activity {
 
                 try {
                     userObject = jsonObject.getJSONObject("user");
+                    tokenObject = jsonObject.getJSONObject("token");
                     populateUser(userObject);
+                    //Bug in that the token needed is not passed with the  user info
+                    user.setApi_token(tokenObject.getString("api_token"));
 
                     //Alert the user that they are signed in with a toast
                     Toast signedIn = Toast.makeText(getApplicationContext(), "Signed In", Toast.LENGTH_LONG);
@@ -186,7 +215,7 @@ public class LoginActivity extends Activity {
                 user.setLast_name(userObject.getString("last_name"));
                 user.setCreated_at(userObject.getString("created_at"));
                 user.setUpdated_at(userObject.getString("updated_at"));
-                user.setApi_token(userObject.getString("api_token"));
+                //user.setApi_token(userObject.getString("api_token"));
                 user.setSigned_in(1);
             } catch (JSONException e) {
                 e.printStackTrace();

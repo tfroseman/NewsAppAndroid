@@ -1,30 +1,39 @@
 package com.newsappandroid;
 
+/**
+ * LogInfo.java
+ * Made to help make logging Info to logcat much easier.
+ */
+
 import android.content.Intent;
 import android.util.Log;
+
+import com.newsappandroid.model.Article;
+import com.newsappandroid.model.Categories;
+import com.newsappandroid.model.User;
 
 public class LogInfo {
 
     public LogInfo() {
     }
 
-    public void logUser(User user){
+    public static void logUser(User user){
         Log.i("User Info", user.toString());
     }
 
-    public void logArticle(Article article){
+    public static void logArticle(Article article){
         Log.i("Article", article.toString());
     }
 
-    public void logCategories(Categories categories){
+    public static void logCategories(Categories categories){
         Log.i("Categories", categories.toString());
     }
 
-    public void logNetwork(NetworkConnection networkConnection){
+    public static void logNetwork(NetworkConnection networkConnection){
         Log.i("Network Connection", networkConnection.toString());
     }
 
-    public void logIntent(Intent intent){
+    public static void logIntent(Intent intent){
         Log.i("Intent", intent.toString());
     }
 

@@ -1,5 +1,11 @@
 package com.newsappandroid;
 
+/**
+ * NetworkConnection.java
+ * Just a simple network helper class. This is not threaded and simple places calls to servers
+ * as needed. and then returns the response
+ */
+
 import android.util.Base64;
 import android.util.Log;
 
@@ -93,7 +99,6 @@ public class NetworkConnection {
                 }
             }
         }
-
         return jsonStr;
     }
 

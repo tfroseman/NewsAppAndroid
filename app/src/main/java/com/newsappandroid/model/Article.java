@@ -1,4 +1,4 @@
-package com.newsappandroid;
+package com.newsappandroid.model;
 
 import java.util.Date;
 
