@@ -13,5 +13,6 @@
     <string name="button_register">Register</string>
     <string name="title_activity_article_list">ArticleList</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_article_view">ArticleView</string>
 
 </resources>

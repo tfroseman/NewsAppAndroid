@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsappandroid" >
 
-    <permission android:name="android.permission.INTERNET" > </permission>
-    <permission android:name="android.permission.ACCESS_NETWORK_STATE"> </permission>
+    <permission android:name="android.permission.INTERNET" >
+    </permission>
+    <permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </permission>
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -15,17 +16,38 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.newsappandroid.MainActivity"
+            android:name=".activities.CategoryActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.newsappandroid.LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:label="@string/title_activity_register"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activities.ArticleListActivity"
+            android:label="@string/title_activity_article_list"
+            android:parentActivityName=".activities.CategoryActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.newsappandroid.activities.CategoryActivity" />
+        </activity>
+        <activity
+            android:name=".ArticleViewActivity"
+            android:label="@string/title_activity_article_view"
+            android:parentActivityName=".activities.ArticleListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.newsappandroid.activities.ArticleListActivity" />
         </activity>
     </application>
 
