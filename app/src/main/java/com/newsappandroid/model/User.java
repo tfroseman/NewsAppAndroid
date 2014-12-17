@@ -20,9 +20,10 @@ public class User {
 
     private static User user = new User();
 
-    private User() {}
+    private User() {
+    }
 
-    public static User getUser(){
+    public static User getUser() {
         return user;
     }
 
@@ -74,7 +75,7 @@ public class User {
         this.api_token = api_token;
     }
 
-    public Boolean hasToken(){
+    public Boolean hasToken() {
         return !this.getApi_token().isEmpty();
     }
 

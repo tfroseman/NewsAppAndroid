@@ -27,16 +27,16 @@ public class FetchNewsTask extends AsyncTask<String, Integer, String> {
     private final String LOG_TAG = CategoryFragment.class.getSimpleName();
     private User user = User.getUser();
 
-    public FetchNewsTask(ArrayAdapter<String> adapter){
+    public FetchNewsTask(ArrayAdapter<String> adapter) {
         this.adapter = adapter;
     }
 
     @Override
     protected String doInBackground(String... params) {
         try {
-            if(user.hasToken()) {
+            if (user.hasToken()) {
                 return NetworkConnection.tokenAuth(Config.API_SERVER_HOST + "category", user.getApi_token());
-            }else {
+            } else {
                 return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "category", user.getEmail(), user.getPassword());
             }
         } catch (IOException e) {
@@ -63,7 +63,7 @@ public class FetchNewsTask extends AsyncTask<String, Integer, String> {
             Log.i("NULL", "Obj is null need more time");
         }
 
-        if(adapter != null) {
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }

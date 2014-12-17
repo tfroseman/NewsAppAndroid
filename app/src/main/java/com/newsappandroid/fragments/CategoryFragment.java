@@ -37,6 +37,7 @@ import java.util.Arrays;
  */
 
 public class CategoryFragment extends Fragment {
+    public static final String ARTICLE = "ARTICLE_ID";
     private ArrayAdapter<String> categoriesAdapter;
     private ListView listView;
     ArrayList<String> lst;
@@ -52,7 +53,7 @@ public class CategoryFragment extends Fragment {
         setHasOptionsMenu(true);
         final Context context = getActivity().getApplicationContext();
 
-        String[] categories = {""};
+        String[] categories = {"Hey"};
 
         lst = new ArrayList<String>();
         lst.addAll(Arrays.asList(categories));
@@ -79,8 +80,15 @@ public class CategoryFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                position = position + 1;
+                Bundle extras = new Bundle();
+                extras.putString(ARTICLE, String.valueOf((position)));
+
                 Intent intent = new Intent(context, ArticleListActivity.class);
-                intent.putExtra("ARTICLE_ID", position);
+
+                intent.putExtras(extras);
+                //intent.putExtra(ARTICLE, String.valueOf(position++));
+                //Log.i("Position", String.valueOf(position)); // Reports proper location
                 startActivity(intent);
             }
         });
@@ -135,7 +143,7 @@ public class CategoryFragment extends Fragment {
                     return NetworkConnection.basicAuth(Config.API_SERVER_HOST + params[0], user.getEmail(), user.getPassword());
                 }
             } catch (IOException e) {
-                Log.i(LOG_TAG, "Error fetching: " + e);
+                //Log.i(LOG_TAG, "Error fetching: " + e);
             }
             return "ERROR";
         }
@@ -147,7 +155,7 @@ public class CategoryFragment extends Fragment {
         protected void onPostExecute(String result) {
             String[] categories;
             try {
-                Log.i(LOG_TAG, result);
+                //Log.i(LOG_TAG, result);
                 //jsonObject = new JSONObject(result);
                 jsonArray = new JSONArray(result);
             } catch (Throwable t) {
@@ -156,9 +164,9 @@ public class CategoryFragment extends Fragment {
 
 
             if (jsonArray != null) {
-                Log.i("Array", jsonArray.toString());
+                //Log.i("Array", jsonArray.toString());
             } else {
-                Log.i("NULL", "Obj is null need more time");
+                //Log.i("NULL", "Obj is null need more time");
             }
             lst.clear();
             for (int i = 0; i < jsonArray.length(); i++) {

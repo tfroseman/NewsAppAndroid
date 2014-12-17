@@ -23,6 +23,7 @@ import com.newsappandroid.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 
 /**
@@ -48,14 +49,13 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Remove notification bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //Remove notification bar
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
 
-        NewsAccountManager.getToken(this);
-
+        NewsAccountManager.getToken(this); // Using system setting store the user info
     }
 
     @Override
@@ -85,22 +85,20 @@ public class LoginActivity extends Activity {
         user_email = ((EditText) findViewById(R.id.user_email)).getText().toString();
         user_password = ((EditText) findViewById(R.id.user_password)).getText().toString();
 
-
+        // Update the user
         user.setEmail(user_email);
         user.setPassword(user_password);
 
-        signedIn = requestAccount(signedIn, user.getEmail(), user.getPassword());
-
+        requestAccount(user.getEmail(), user.getPassword());
     }
 
-    public void register(View view){
+    public void register(View view) {
         // Create intent to launch new register activity
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
 
-    private int requestAccount(int signedIn, String email, String password) {
-        String response = "";
+    private int requestAccount(String email, String password) {
         LoginRequestTask loginTask = new LoginRequestTask();
 
         loginTask.execute(email, password);
@@ -135,23 +133,22 @@ public class LoginActivity extends Activity {
 
         /**
          * Called by object.execute
-         *
          */
         @Override
         protected String doInBackground(String... params) {
-                try {
-                    if (user.hasToken()) {
-                        return NetworkConnection.tokenAuth(Config.API_SERVER_HOST + "account", user.getApi_token());
-                    } else {
-                        return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
-                        //result = NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
-                        //Log.i("Result", result);
-                        //return result;
-                    }
-
-                } catch (IOException e) {
-                    // Log exception
+            try {
+                if (user.hasToken()) {
+                    return NetworkConnection.tokenAuth(Config.API_SERVER_HOST + "account", user.getApi_token());
+                } else {
+                    return NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                    //result = NetworkConnection.basicAuth(Config.API_SERVER_HOST + "account", user.getEmail(), user.getPassword());
+                    //Log.i("Result", result);
+                    //return result;
                 }
+
+            } catch (IOException e) {
+                // Log exception
+            }
             // Should not hit this
             return "ERROR";
         }
@@ -164,40 +161,39 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(String result) {
             completed = true;
             //if (result.matches("Network Error")){
-                //Toast signedIn = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
-                //signedIn.show();
-                //user.setSigned_in(-9);
+            //Toast signedIn = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
+            //signedIn.show();
+            //user.setSigned_in(-9);
             //}else {
 
-                JSONObject userObject;
-                JSONObject tokenObject;
-                try {
-                    jsonObject = new JSONObject(result);
-                } catch (Throwable t) {
-                    // Log here about malformed json
-                }
+            JSONObject userObject;
+            JSONObject tokenObject;
+            try {
+                jsonObject = new JSONObject(result);
+            } catch (Throwable t) {
+                // Log here about malformed json
+            }
 
-                try {
-                    userObject = jsonObject.getJSONObject("user");
-                    tokenObject = jsonObject.getJSONObject("token");
-                    populateUser(userObject);
-                    //Bug in that the token needed is not passed with the  user info
-                    user.setApi_token(tokenObject.getString("api_token"));
+            try {
+                userObject = jsonObject.getJSONObject("user");
+                tokenObject = jsonObject.getJSONObject("token");
+                populateUser(userObject);
+                //Bug in that the token needed is not passed with the  user info
+                user.setApi_token(tokenObject.getString("api_token"));
 
-                    //Alert the user that they are signed in with a toast
-                    Toast signedIn = Toast.makeText(getApplicationContext(), "Signed In", Toast.LENGTH_LONG);
-                    signedIn.show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                //Alert the user that they are signed in with a toast
+                Toast signedIn = Toast.makeText(getApplicationContext(), "Signed In", Toast.LENGTH_LONG);
+                signedIn.show();
+            } catch (JSONException e) {
+                e.printStackTrace();
 
-                }
-           // }
+            }
+            // }
             nextActivity();
         }
 
         /**
          * Called from doInBackground to update main thread
-         *
          */
         @Override
         protected void onProgressUpdate(Boolean... progress) {
@@ -222,9 +218,10 @@ public class LoginActivity extends Activity {
             }
         }
 
-        private boolean checkNetwork(){
+        //Check network prior to connection to avoid crashes
+        private boolean checkNetwork() {
             ConnectivityManager cm =
-                    (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();

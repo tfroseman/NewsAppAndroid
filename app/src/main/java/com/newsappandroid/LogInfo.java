@@ -17,23 +17,23 @@ public class LogInfo {
     public LogInfo() {
     }
 
-    public static void logUser(User user){
+    public static void logUser(User user) {
         Log.i("User Info", user.toString());
     }
 
-    public static void logArticle(Article article){
+    public static void logArticle(Article article) {
         Log.i("Article", article.toString());
     }
 
-    public static void logCategories(Categories categories){
+    public static void logCategories(Categories categories) {
         Log.i("Categories", categories.toString());
     }
 
-    public static void logNetwork(NetworkConnection networkConnection){
+    public static void logNetwork(NetworkConnection networkConnection) {
         Log.i("Network Connection", networkConnection.toString());
     }
 
-    public static void logIntent(Intent intent){
+    public static void logIntent(Intent intent) {
         Log.i("Intent", intent.toString());
     }
 

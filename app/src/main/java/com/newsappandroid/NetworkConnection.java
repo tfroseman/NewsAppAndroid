@@ -21,13 +21,21 @@ public class NetworkConnection {
     private static final String LOG_TAG = NetworkConnection.class.getSimpleName();
     private static final String ERROR_LOGIN = "LOGIN_FAILURE";
 
-    private NetworkConnection(){}
+    private NetworkConnection() {
+    }
 
     public static String basicAuth(String url, String username, String password) throws IOException {
         String encodedCredentials = Base64.encodeToString((username + ":" + password).getBytes(), Base64.NO_WRAP);
 
         HttpURLConnection urlConnection = urlConnection(url);
         urlConnection.setRequestProperty("Authorization", "Basic " + encodedCredentials);
+        urlConnection.setRequestMethod("GET");
+
+        return request(urlConnection);
+    }
+
+    public static String register(String url, String username, String password) throws IOException {
+        HttpURLConnection urlConnection = urlConnection(url + "/" + username + "/" + password);
         urlConnection.setRequestMethod("GET");
 
         return request(urlConnection);
@@ -83,9 +91,9 @@ public class NetworkConnection {
                 return null;
             }
             jsonStr = buffer.toString();
-            Log.i(LOG_TAG, jsonStr);
+            //Log.i(LOG_TAG, jsonStr);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            //Log.e(LOG_TAG, "Error ", e);
             return null;
         } finally {
             if (urlConnection != null) {
