@@ -9,7 +9,7 @@ public class Config {
     /**
      * Host address of the API server
      */
-    public static final String API_SERVER_HOST = "http://104.131.13.79/";
+    public static final String API_SERVER_HOST = "http://104.131.109.166/";
     /**
      * Minimum length that a password can be
      */
